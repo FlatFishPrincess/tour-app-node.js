@@ -11,4 +11,5 @@ You also should have database and tables already set
 
 2. Start server
 To start the server, open command line 
+if not node_modules, `npm install`
 then type `npm run start`

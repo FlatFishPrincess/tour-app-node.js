@@ -1,10 +1,12 @@
 
-const mysql = require('mysql');
+import mysql from 'mysql';
 
 const mysqlConnection = mysql.createConnection({
+  // socketPath needs for MAMP, if u do not use it, just comment out
   socketPath : '/Applications/MAMP/tmp/mysql/mysql.sock',
   host: 'localhost',
   user: 'root',
+  // make sure ur password is correct
   password: 'root',
   database: 'TEST',
   multipleStatements: true
