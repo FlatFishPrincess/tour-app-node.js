@@ -1,5 +1,6 @@
+// import mysql from 'mysql';
 
-import mysql from 'mysql';
+const mysql = require('mysql');
 
 const mysqlConnection = mysql.createConnection({
   // socketPath needs for MAMP, if u do not use it, just comment out
@@ -8,7 +9,7 @@ const mysqlConnection = mysql.createConnection({
   user: 'root',
   // make sure ur password is correct
   password: 'root',
-  database: 'TEST',
+  database: 'tourreview',
   multipleStatements: true
 });
 
@@ -20,4 +21,4 @@ mysqlConnection.connect((err) => {
   }
 }); 
 
-export default mysqlConnection;
+module.exports = mysqlConnection;

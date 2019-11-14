@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- 생성 시간: 19-10-28 19:07
+-- 생성 시간: 19-11-07 23:12
 -- 서버 버전: 5.7.26
 -- PHP 버전: 7.2.18
 
@@ -31,10 +31,10 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `admin`;
 CREATE TABLE IF NOT EXISTS `admin` (
   `adminId` varchar(20) NOT NULL DEFAULT '',
-  `adminname` varchar(20) DEFAULT NULL,
+  `adminname` varchar(20) NOT NULL,
   `adminpassword` varchar(20) NOT NULL,
   PRIMARY KEY (`adminId`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- 테이블의 덤프 데이터 `admin`
@@ -57,16 +57,9 @@ CREATE TABLE IF NOT EXISTS `comment` (
   `comment` varchar(200) NOT NULL,
   `reviewId` int(11) NOT NULL,
   PRIMARY KEY (`commentId`),
-  KEY `userId` (`userId`),
-  KEY `reviewId` (`reviewId`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
---
--- 테이블의 덤프 데이터 `comment`
---
-
-INSERT INTO `comment` (`commentId`, `userId`, `createdDate`, `comment`, `reviewId`) VALUES
-(1, '', '', '', 0);
+  KEY `reviewId` (`reviewId`),
+  KEY `userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -81,14 +74,7 @@ CREATE TABLE IF NOT EXISTS `location` (
   `country` varchar(20) NOT NULL,
   `description` varchar(200) NOT NULL,
   PRIMARY KEY (`locationId`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
---
--- 테이블의 덤프 데이터 `location`
---
-
-INSERT INTO `location` (`locationId`, `name`, `country`, `description`) VALUES
-(1, 'Vancouver', 'Canada', 'This is so beautiful');
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -104,17 +90,11 @@ CREATE TABLE IF NOT EXISTS `review` (
   `rating` int(5) NOT NULL,
   `userId` varchar(20) NOT NULL,
   `locationId` int(11) NOT NULL,
+  `title` varchar(20) NOT NULL,
   PRIMARY KEY (`reviewId`),
   KEY `userId` (`userId`),
   KEY `locationId` (`locationId`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
-
---
--- 테이블의 덤프 데이터 `review`
---
-
-INSERT INTO `review` (`reviewId`, `createdDate`, `reviewDescription`, `rating`, `userId`, `locationId`) VALUES
-(1, '8/12/2019', 'afdassa', 4, 'Chris123', 1);
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -125,21 +105,41 @@ INSERT INTO `review` (`reviewId`, `createdDate`, `reviewDescription`, `rating`, 
 DROP TABLE IF EXISTS `siteuser`;
 CREATE TABLE IF NOT EXISTS `siteuser` (
   `userId` varchar(20) NOT NULL,
-  `username` varchar(20) DEFAULT NULL,
+  `username` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
   `photo` varchar(20) NOT NULL,
-  `profile` varchar(20) NOT NULL,
+  `profile` varchar(100) NOT NULL,
+  `firstName` varchar(20) NOT NULL,
+  `lastName` varchar(20) NOT NULL,
+  `email` varchar(20) NOT NULL,
+  `phoneNum` varchar(20) NOT NULL,
   PRIMARY KEY (`userId`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- 테이블의 덤프 데이터 `siteuser`
 --
 
-INSERT INTO `siteuser` (`userId`, `username`, `password`, `photo`, `profile`) VALUES
-('chris123', 'Chris', 'q12345', 'b1', 'p1'),
-('David123', 'David', '12345', 'd2', 'p2'),
-('john123', 'john', 'j12345', 'd3', 'p3');
+INSERT INTO `siteuser` (`userId`, `username`, `password`, `photo`, `profile`, `firstName`, `lastName`, `email`, `phoneNum`) VALUES
+('john123', 'dbsjsdkj', 'sdfkdsjflk', 'dsjflksdjflkk', 'lsdfsdfjskl', 'fdsfsdjkljlk', 'fdsfsdkjsdkl', 'sdjfd@fsdfsdf', 'dsjfksdjlfks');
+
+--
+-- 덤프된 테이블의 제약사항
+--
+
+--
+-- 테이블의 제약사항 `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`reviewId`) REFERENCES `review` (`reviewId`) ON DELETE CASCADE,
+  ADD CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`userId`) REFERENCES `siteuser` (`userId`) ON DELETE CASCADE;
+
+--
+-- 테이블의 제약사항 `review`
+--
+ALTER TABLE `review`
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `siteuser` (`userId`) ON DELETE CASCADE,
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`locationId`) REFERENCES `location` (`locationId`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

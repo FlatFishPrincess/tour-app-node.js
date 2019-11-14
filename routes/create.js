@@ -5,8 +5,9 @@ const mysqlConnection = require('../connection.js');
 //create user
 router.post('/user',(req,res) =>{
     const data = req.body;
-    const queryString = 'INSERT INTO siteUser VALUES (?,?,?,?,?)';
-    var params = [data.userId,data.username,data.password,data.photo,data.profile];  
+    const queryString = 'INSERT INTO siteUser VALUES (?,?,?,?,?,?,?,?,?)';
+    var params = [data.userId,data.username,data.password,data.photo,data.profile,
+                data.firstName,data.lastName,data.email,data.phoneNum];  
     mysqlConnection.query(queryString,params,(err,result)=>{
         if(err){
           console.log(err);
@@ -17,7 +18,7 @@ router.post('/user',(req,res) =>{
         }
     })
 });
-  
+ 
 //create administer
 router.post('/admin',(req,res) =>{
     const data = req.body;
@@ -36,9 +37,10 @@ router.post('/admin',(req,res) =>{
   
 //createReview 
 router.post('/review', (req, res) => {
-    const queryString = 'insert into review values (?,?,?,?,?)';
+    const queryString = 'insert into review values (?,?,?,?,?,?,?)';
     const data = req.body;
-    var params = [data.createdDate,data.reviewDescription,data.rating,data.userId,data.locationId];
+    var params = [data.reviewId,data.createdDate,data.reviewDescription,
+                data.rating,data.userId,data.locationId,data.title];
     mysqlConnection.query(queryString,params, (err, result, fields) => {
         if(err){
         console.log(err);
@@ -54,7 +56,7 @@ router.post('/review', (req, res) => {
 router.post('/comment', (req, res) => {
     const queryString = 'insert into comment values (?,?,?,?,?)';
     const data = req.body;
-    var params = [data.commentId,data.userID,data.createdDate,data.comment,data.reviewId];
+    var params = [data.commentId,data.userId,data.createdDate,data.comment,data.reviewId];
     mysqlConnection.query(queryString,params, (err, result, fields) => {
         if(err){
         console.log(err);
@@ -81,6 +83,6 @@ router.post('/location', (req, res) => {
         }
     })
 });
-  
+
 module.exports = router;
   
