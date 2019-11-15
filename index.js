@@ -3,11 +3,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 // const travelRouter = require('./routes/travels');
 
-const loginRouter = require('./routes/login');
-const createRouter = require('./routes/create');
-const getRouter = require('./routes/get');
-const updateRouter = require('./routes/update');
-const deleteRouter = require('./routes/delete');
+const loginRouter = require('./routes/login.js');
+const createRouter = require('./routes/create.js');
+const getRouter = require('./routes/get.js');
+const updateRouter = require('./routes/update.js');
+const deleteRouter = require('./routes/delete.js');
 
 const app = express();
 
@@ -26,4 +26,7 @@ app.use('/update', updateRouter);
 app.use('/delete', deleteRouter);
 
 // localhost:3000
-app.listen(3000);
+app.listen(3000, ()=>{
+    console.log("listening 3000");
+   
+});

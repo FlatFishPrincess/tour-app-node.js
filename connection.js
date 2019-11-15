@@ -4,11 +4,11 @@ const mysql = require('mysql');
 
 const mysqlConnection = mysql.createConnection({
   // socketPath needs for MAMP, if u do not use it, just comment out
-  socketPath : '/Applications/MAMP/tmp/mysql/mysql.sock',
+  //socketPath : '/Applications/MAMP/tmp/mysql/mysql.sock',
   host: 'localhost',
   user: 'root',
   // make sure ur password is correct
-  password: 'root',
+  password: '',
   database: 'tourreview',
   multipleStatements: true
 });

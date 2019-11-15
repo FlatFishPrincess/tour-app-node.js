@@ -2,6 +2,20 @@ const express = require("express");
 const router = express.Router();
 const mysqlConnection = require('../connection.js');
 
+
+//get all user information
+router.get('/user', (req, res) => {
+  const queryString = 'select * from siteuser';
+  mysqlConnection.query(queryString, (err, result, fields) => {
+    if(err){
+      console.log(err);
+    } else {
+      console.log("sucess to get user's information");
+      res.send(result);
+    }
+  })
+});
+
 //get user information
 router.get('/user/:id', (req, res) => {
     const queryString = 'select * from siteuser where userid = ?';
@@ -15,6 +29,19 @@ router.get('/user/:id', (req, res) => {
     })
 });
 
+//get all location information
+router.get('/location', (req, res) => {
+  const queryString = 'select * from location';
+  mysqlConnection.query(queryString, (err, result, fields) => {
+    if(err){
+      console.log(err);
+    } else {
+      console.log("sucess to get location's information");
+      res.send(result);
+    }
+  })
+});
+
 //get location information
 router.get('/location/:id', (req, res) => {
     const queryString = 'select * from location where locationid = ?';
@@ -26,6 +53,19 @@ router.get('/location/:id', (req, res) => {
         res.send(result);
       }
     })
+});
+
+//get all review information
+router.get('/review', (req, res) => {
+  const queryString = 'select * from review';
+  mysqlConnection.query(queryString, (err, result, fields) => {
+    if(err){
+      console.log(err);
+    } else {
+      console.log("sucess to get all review");
+      res.send(result);
+    }
+  })
 });
 
 //get specific user's review
