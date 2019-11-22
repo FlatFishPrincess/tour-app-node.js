@@ -10,8 +10,8 @@ router.post('/user',(req,res) =>{
         if(err){
           console.log(err);
         }else{
-          console.log("succeed");
-          res.redirect('/');
+          console.log("succeed", result);
+          res.send(result);
         }
       });
 });
@@ -25,7 +25,7 @@ var queryString = 'select * from admin where adminId = ? AND adminpassword = ?';
         console.log(err);
     }else{
         console.log("succeed");
-        res.redirect('/');
+        // res.redirect('/');
     }
     });
 });

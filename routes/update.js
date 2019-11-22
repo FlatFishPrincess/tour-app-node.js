@@ -3,7 +3,6 @@ const router = express.Router();
 const mysqlConnection = require('../connection.js');
 
 //Update the review
-// 'INSERT INTO siteUser VALUES (?,?,?,?,?)';
 router.post('/review', (req, res) => {
     const queryString = `Update review SET createdDate = ?,reviewDescription = ?, rating = ?, userId = ?, locationId = ? WHERE reviewId=?`; 
     const data = req.body;
@@ -47,5 +46,22 @@ router.post('/location', (req, res) => {
         }
     })
 });
+
+//Update the user
+router.put('/user/:userId', (req, res) => {
+  const queryString = `Update siteuser SET username = ?,password = ?, photo = ?, profile = ?, firstName = ?, lastName = ?, email = ?, phoneNum = ? WHERE userId=?`; 
+  const data = req.body;
+  var params = [data.username,data.password,data.photo,data.profile,
+    data.firstName,data.lastName,data.email,data.phoneNum, req.params.userId];  
+  mysqlConnection.query(queryString,params, (err, result, fields) => {
+    if(err){
+      console.log(err);
+    } else {
+      console.log("succeed to edit user");
+      res.sendStatus(200);
+    }
+  })
+});
+
   
 module.exports = router;

@@ -11,6 +11,7 @@ router.post('/user',(req,res) =>{
     mysqlConnection.query(queryString,params,(err,result)=>{
         if(err){
           console.log(err);
+          res.send(err);
         }else{
           console.log("create user success")
           res.send(result);
@@ -28,9 +29,8 @@ router.post('/admin',(req,res) =>{
         if(err){
             console.log(err);
         }else{
-
             console.log("create admin success")
-            res.redirect('/');
+            // res.redirect('/');
         }
     })
 });
@@ -45,8 +45,9 @@ router.post('/review', (req, res) => {
         if(err){
         console.log(err);
         } else {
-        console.log("succeed to post review");
-        res.redirect('/');
+            console.log("succeed to post review");
+            // res.redirect('/');
+            res.sendStatus(200);
         }
     })
 });

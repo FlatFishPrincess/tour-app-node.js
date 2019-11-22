@@ -57,7 +57,7 @@ router.get('/location/:id', (req, res) => {
 
 //get all review information
 router.get('/review', (req, res) => {
-  const queryString = 'select * from review';
+  const queryString = 'select * from review order by createdDate desc';
   mysqlConnection.query(queryString, (err, result, fields) => {
     if(err){
       console.log(err);

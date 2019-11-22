@@ -15,8 +15,21 @@ app.get('/', (req, res) => {
   res.send('this is main page');
 });
 
+// app.use(cors());
+// app.use(bodyParser.json());
+
+var rawBodyHandler = function (req, res, buf, encoding) {
+  if (buf && buf.length) {
+      req.rawBody = buf.toString(encoding || 'utf8');
+      console.log('Raw body: ' + req.rawBody);
+  }
+}
+
 app.use(cors());
-app.use(bodyParser.json());
+app.options('*', cors());  // enable pre-flight
+
+app.use(bodyParser.json({ verify: rawBodyHandler }));
+
 
 // app.use(function(req, res, next) {
 //   res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
