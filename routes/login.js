@@ -24,8 +24,8 @@ var queryString = 'select * from admin where adminId = ? AND adminpassword = ?';
     if(err){
         console.log(err);
     }else{
-        console.log("succeed");
-        // res.redirect('/');
+        console.log("succeed", result, data);
+        res.send(data.adminId);
     }
     });
 });

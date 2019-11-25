@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mysqlConnection = require('../connection.js');
+const multer = require("multer");
+const path = require("path");
 
 //Update the review
 router.post('/review', (req, res) => {
@@ -63,5 +65,38 @@ router.put('/user/:userId', (req, res) => {
   })
 });
 
-  
+const storage = multer.diskStorage({
+  destination: "public/profiles/",
+  filename: function(req, file, cb){
+     cb(null,`${req.params.userId}${path.extname(file.originalname)}`);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits:{fileSize: 3000000},
+}).single("profile");
+
+router.post('/user/profile/:userId', function (req, res) {
+  upload(req, res, function (err) {
+    console.log("Request file ---", req.file); //Here you get file.
+    // if no error, update user photo
+    if(!err) {
+      const queryString = `Update siteuser SET photo=? WHERE userId=?`;
+      console.log(req.file.path, 'path??',  req.params.userId, "userId?");
+      var params = [req.file.path, req.params.userId];
+      mysqlConnection.query(queryString, params, (err, result, fields) => {
+        if(err){
+          console.log(err);
+          res.sendStatus(404);
+        } else {
+          console.log("succeed to edit user");
+          res.status(200).send(req.file.path);
+        }
+      })
+    }
+  });
+})
+
+
 module.exports = router;

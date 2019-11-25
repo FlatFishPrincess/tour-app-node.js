@@ -8,6 +8,23 @@ const getRouter = require('./routes/get.js');
 const updateRouter = require('./routes/update.js');
 const deleteRouter = require('./routes/delete.js');
 const cors = require('cors');
+
+// const multer = require('multer');
+// const file = require('file');
+
+// // set storage engine 
+// const storage = multer.diskStorage({
+//   destination: './public/uploads/',
+//   filename: function(req, file, cb) {
+//     cb(null, file.filename + '-' + Date.now() + path.extname(file.originalname));
+//   }
+// }); 
+
+// // Init Upload
+// export const upload = multer({
+//   storage: storage
+// }).array('reviewImage', 12);
+
 const app = express();
 
 app.get('/', (req, res) => {
@@ -15,9 +32,12 @@ app.get('/', (req, res) => {
   res.send('this is main page');
 });
 
-// app.use(cors());
-// app.use(bodyParser.json());
+// get static files with virtual url
+app.use('/public/profiles', express.static('public/profiles'));
+app.use('/public/reviews', express.static('public/reviews'));
 
+
+// handling cors
 var rawBodyHandler = function (req, res, buf, encoding) {
   if (buf && buf.length) {
       req.rawBody = buf.toString(encoding || 'utf8');
@@ -30,15 +50,6 @@ app.options('*', cors());  // enable pre-flight
 
 app.use(bodyParser.json({ verify: rawBodyHandler }));
 
-
-// app.use(function(req, res, next) {
-//   res.header('Access-Control-Allow-Origin', 'http://localhost:3000'); // update to match the domain you will make the request from
-//   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-//   next();
-// });
-
-// router
-// app.use('/travels', travelRouter);
 app.use('/login', loginRouter);
 app.use('/create', createRouter);
 app.use('/get', getRouter);

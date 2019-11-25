@@ -8,10 +8,10 @@ router.get('/user', (req, res) => {
   const queryString = 'select * from siteuser';
   mysqlConnection.query(queryString, (err, result, fields) => {
     if(err){
-      console.log(err);
+      console.log('error has been occured: ',err);
     } else {
       console.log("sucess to get user's information");
-      res.send(result);
+      res.status(200).send(result);
     }
   })
 });
