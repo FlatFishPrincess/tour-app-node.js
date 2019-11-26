@@ -1,5 +1,6 @@
 // import mysql from 'mysql';
-
+// Fix later
+// https://codeburst.io/node-js-mysql-and-promises-4c3be599909b
 const mysql = require('mysql');
 
 const mysqlConnection = mysql.createConnection({

@@ -81,6 +81,19 @@ router.get('/review/user/:id', (req, res) => {
     })
 });
 
+//get review photos user information
+router.get('/review/photo/:reviewId', (req, res) => {
+  const queryString = 'select * from reviewimage where reviewid = ?';
+  mysqlConnection.query(queryString, [req.params.reviewId], (err, result, fields) => {
+    if(err){
+      console.log('error has been occured: ',err);
+    } else {
+      console.log("sucess to get review's photos");
+      res.status(200).send(result);
+    }
+  })
+});
+
 //get reviews in specific location
 router.get('/review/location/:id', (req, res) => {
     const queryString = 'select * from review where locationid = ?';

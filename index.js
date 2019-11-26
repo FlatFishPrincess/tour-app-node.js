@@ -33,9 +33,9 @@ app.get('/', (req, res) => {
 });
 
 // get static files with virtual url
-app.use('/public/profiles', express.static('public/profiles'));
 app.use('/public/reviews', express.static('public/reviews'));
-
+app.use('/public/profiles', express.static('public/profiles'));
+app.use('/public/shared', express.static('public/shared'));
 
 // handling cors
 var rawBodyHandler = function (req, res, buf, encoding) {

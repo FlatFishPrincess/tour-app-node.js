@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mysqlConnection = require('../connection.js');
+const path = require("path");
+const multer = require("multer");
 
 //create user
 router.post('/user',(req,res) =>{
@@ -34,7 +36,72 @@ router.post('/admin',(req,res) =>{
         }
     })
 });
+
+let index = 0;
+
+const storage = multer.diskStorage({
+    destination: "public/reviews/",
+    filename: function(req, file, cb){
+      // console.log('storage???: ',file.originalname, path.extname(file.originalname),'index?',index);
+       cb(null,`${req.params.reviewId}-${index++}${path.extname(file.originalname)}`);
+    }
+  });
+
+const upload = multer({
+  storage: storage,
+  limits:{fileSize: 3000000},
+}).array("reviewImages");
   
+router.post('/uploads/:reviewId', function (req, res) {
+  upload(req, res, function (err) {
+    console.log("Request file ---", req.files, req.params.reviewId); //Here you get file.
+    // if no error, update user photo
+    if(!err) {
+      const queryString = 'INSERT INTO reviewimage VALUES ?';
+      const paramArr = [];
+      req.files.map(file => {
+        paramArr.push([null, req.params.reviewId, file.path]);
+      })
+      mysqlConnection.query(queryString, [paramArr], (err, result, fields) => {
+        if(err){
+          console.log(err);
+          // res.sendStatus(404);
+        } else {
+          console.log("succeed to edit user");
+          res.sendStatus(200);
+        }
+      });
+    }
+  });
+})
+
+//createReview 
+// router.post('/review', (req, res) => {
+//   const queryString = 'insert into review values (?,?,?,?,?,?,?)';
+//   const data = req.body;
+//   console.log('req???',req);
+//   console.log('create reivew??', data);
+//   var params = [data.reviewId,data.createdDate,data.reviewDescription,
+//               data.rating,data.userId,data.locationId,data.title];
+//     new Promise((resolve, reject) => {
+//       mysqlConnection.query(queryString, params, (err, result) => {
+//         if(err){
+//           return reject(err);
+//         }
+//         resolve(result);
+//       })
+//     })
+//     .then(result => {
+//       console.log('Promise result?? and the review id?', result.insertId);
+//       const reviewId = result.insertId;
+//       updateReviewPhotos(reviewId);
+//       return 
+//     })
+//     .catch(err => console.log('Error: ',err))
+      
+// });
+
+
 //createReview 
 router.post('/review', (req, res) => {
     const queryString = 'insert into review values (?,?,?,?,?,?,?)';
@@ -45,9 +112,9 @@ router.post('/review', (req, res) => {
         if(err){
         console.log(err);
         } else {
-            console.log("succeed to post review");
-            // res.redirect('/');
-            res.sendStatus(200);
+            console.log("succeed to post review", result);
+            // updateReviewPhotos();
+            res.status(200).send(result.insertId.toString());
         }
     })
 });
