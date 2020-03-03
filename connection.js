@@ -3,7 +3,7 @@
 // https://codeburst.io/node-js-mysql-and-promises-4c3be599909b
 const mysql = require('mysql');
 
-const mysqlConnection = mysql.createConnection({
+const mysqlConnection = mysql.createPool({
   // socketPath needs for MAMP, if u do not use it, just comment out
   // socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock',
   host: 'us-cdbr-iron-east-04.cleardb.net',
@@ -14,12 +14,12 @@ const mysqlConnection = mysql.createConnection({
   multipleStatements: true
 });
 
-mysqlConnection.connect(err => {
-  if (err) {
-    console.log('failed connected', err);
-  } else {
-    console.log('connected');
-  }
-});
+// mysqlConnection.connect(err => {
+//   if (err) {
+//     console.log('failed connected', err);
+//   } else {
+//     console.log('connected');
+//   }
+// });
 
 module.exports = mysqlConnection;
