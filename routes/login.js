@@ -5,8 +5,8 @@ const mysqlConnection = require('../connection.js');
 //create user to page:
 router.post('/user',(req,res) =>{
     const data = req.body;
-    var queryString = 'select * from siteuser where userid = ? AND password = ?';
-      mysqlConnection.query(queryString,[data.userId,data.password],(err,result)=>{
+    var queryString = 'select * from siteuser where username = ? AND password = ?';
+      mysqlConnection.query(queryString,[data.username,data.password],(err,result)=>{
         if(err){
           console.log(err);
         }else{
