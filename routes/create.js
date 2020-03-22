@@ -1,11 +1,12 @@
 const express = require("express");
-const router = express.Router();
+const app = express();
 const mysqlConnection = require('../connection.js');
-const path = require("path");
-const multer = require("multer");
+const cloudinary = require('../cloudinary');
+const upload = require('../multer');
+const fs = require("fs");
 
 //create user
-router.post('/user',(req,res) =>{
+app.post('/user',(req,res) =>{
     const data = req.body;
     const queryString = 'INSERT INTO siteUser VALUES (?,?,?,?,?,?,?,?,?)';
     var params = [data.userId,data.username,data.password,data.photo,data.profile,
@@ -23,7 +24,7 @@ router.post('/user',(req,res) =>{
 });
  
 //create administer
-router.post('/admin',(req,res) =>{
+app.post('/admin',(req,res) =>{
     const data = req.body;
     const queryString = 'INSERT INTO admin VALUES (?,?,?)';
     var params = [data.adminId,data.adminname,data.adminpassword];  
@@ -36,74 +37,44 @@ router.post('/admin',(req,res) =>{
         }
     })
 });
-
-let index = 0;
-
-const storage = multer.diskStorage({
-    destination: "public/reviews/",
-    filename: function(req, file, cb){
-      // console.log('storage???: ',file.originalname, path.extname(file.originalname),'index?',index);
-       cb(null,`${req.params.reviewId}-${index++}${path.extname(file.originalname)}`);
-    }
-  });
-
-const upload = multer({
-  storage: storage,
-  limits:{fileSize: 3000000},
-}).array("reviewImages");
   
-router.post('/uploads/:reviewId', function (req, res) {
-  upload(req, res, function (err) {
-    console.log("Request file ---", req.files, req.params.reviewId); //Here you get file.
-    // if no error, update user photo
-    if(!err) {
-      const queryString = 'INSERT INTO reviewimage VALUES ?';
-      const paramArr = [];
-      req.files.map(file => {
-        paramArr.push([null, req.params.reviewId, file.path]);
-      })
-      mysqlConnection.query(queryString, [paramArr], (err, result, fields) => {
-        if(err){
-          console.log(err);
-          // res.sendStatus(404);
-        } else {
-          console.log("succeed to edit user");
-          res.sendStatus(200);
-        }
-      });
+app.use('/upload-images/:reviewId', upload.array('image'), async (req, res) => {
+  const queryString = 'INSERT INTO reviewimage (urlPath, reviewId) VALUES ?';
+  const uploader = async (path) => await cloudinary.uploads(path, 'Images');
+  const reviewId = parseInt(req.params.reviewId, 10);
+  if (req.method === 'POST') {
+    const urls = []
+    const files = req.files;
+    for (const file of files) {
+      const { path } = file;
+      const newPath = await uploader(path)
+      urls.push(newPath)
+      fs.unlinkSync(path)
     }
-  });
+    const params = urls.map(({ url }) => { 
+        const stringUrl = "'" + url + "'";
+        return stringUrl;
+    })
+    mysqlConnection.query(queryString,[urls.map(({url}) => [url, reviewId])], (err, result, fields) => {
+      if(err){
+      console.log(err);
+      } else {
+          console.log("succeed to post review", result);
+          res.status(200).json({
+            message: 'images uploaded successfully',
+            data: urls
+          })
+      }
+    })
+  } else {
+    res.status(405).json({
+      err: `${req.method} method not allowed`
+    })
+  }
 })
 
 //createReview 
-// router.post('/review', (req, res) => {
-//   const queryString = 'insert into review values (?,?,?,?,?,?,?)';
-//   const data = req.body;
-//   console.log('req???',req);
-//   console.log('create reivew??', data);
-//   var params = [data.reviewId,data.createdDate,data.reviewDescription,
-//               data.rating,data.userId,data.locationId,data.title];
-//     new Promise((resolve, reject) => {
-//       mysqlConnection.query(queryString, params, (err, result) => {
-//         if(err){
-//           return reject(err);
-//         }
-//         resolve(result);
-//       })
-//     })
-//     .then(result => {
-//       console.log('Promise result?? and the review id?', result.insertId);
-//       const reviewId = result.insertId;
-//       updateReviewPhotos(reviewId);
-//       return 
-//     })
-//     .catch(err => console.log('Error: ',err))
-      
-// });
-
-
-//createReview 
-router.post('/review', (req, res) => {
+app.post('/review', (req, res) => {
     const queryString = 'insert into review values (?,?,?,?,?,?,?)';
     const data = req.body;
     var params = [data.reviewId,data.createdDate,data.reviewDescription,
@@ -121,7 +92,7 @@ router.post('/review', (req, res) => {
 
 //"userID":"john123","createdDate":"09/01/19","comment":"you so good","reviewId":"1"
 //Create Comment 
-router.post('/comment', (req, res) => {
+app.post('/comment', (req, res) => {
     const queryString = 'insert into comment values (?,?,?,?,?)';
     const data = req.body;
     var params = [data.commentId,data.userId,data.createdDate,data.comment,data.reviewId];
@@ -137,7 +108,7 @@ router.post('/comment', (req, res) => {
 });
   
 //Create Location 
-router.post('/location', (req, res) => {
+app.post('/location', (req, res) => {
     const queryString = 'insert into location values (?,?,?,?)';
     const data = req.body;
     var params = [data.locationId,data.name,data.country,data.description];
@@ -152,5 +123,5 @@ router.post('/location', (req, res) => {
     })
 });
 
-module.exports = router;
+module.exports = app;
   
